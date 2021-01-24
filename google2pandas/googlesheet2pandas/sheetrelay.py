@@ -7,27 +7,19 @@ from google2pandas.helpers import ValidateSetterProperty, scope_validation
 
 
 class SheetRelay:
+
+    sheet_scopes = "https://www.googleapis.com/auth/spreadsheets"
+    drive_scopes = "https://www.googleapis.com/auth/drive.readonly"
+
     def __init__(
         self,
         key_file=None,
-        sheet_scopes="https://www.googleapis.com/auth/spreadsheets.readonly",
-        drive_scopes="https://www.googleapis.com/auth/drive.readonly",
     ):
         self.key_file = key_file
-        self.sheet_scopes = sheet_scopes
-        self.drive_scopes = drive_scopes
-
-    @ValidateSetterProperty
-    def sheet_scopes(self, new_scopes):
-        possible_sheet_scopes = [
-            "https://www.googleapis.com/auth/drive",
-            "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/drive.readonly",
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/spreadsheets.readonly",
-        ]
-
-        return scope_validation(new_scopes, possible_sheet_scopes)
+        self._sheet_credentials = service_account.Credentials.from_service_account_file(self.key_file).with_scopes(sheet_scopes)
+        self._drive_credentials = service_account.Credentials.from_service_account_file(self.key_file).with_scopes(drive_scopes)
+        self._sheet_service = build('sheets', 'v4', self._sheet_credentials)
+        self._drive_service = build('drive', 'v3', self._drive_credentials)
 
     @ValidateSetterProperty
     def key_file(self, input_key_file):
