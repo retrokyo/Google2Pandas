@@ -113,6 +113,22 @@ class SheetRelay:
             raise Exception("Failed to find file {0} in drive".format(spreadsheet_name))
 
         return spreadsheet_id
+
+    def clear_sheet(self, spreadsheet_name, sheet_name='Sheet1', by_id=False):
+        if by_id:
+            spreadsheet_id = spreadsheet_name
+        else:
+            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+
+        if isinstance(sheet_name, list):
+            for sheet in sheet_name:
+                self._sheet_service.spreadsheets().values().batchClear(spreadsheetId=spreadsheet_id, ranges=sheet).execute()
+
+        elif isinstance(sheet_name, str):
+            self._sheet_service.spreadsheets().values().batchClear(spreadsheetId=spreadsheet_id, ranges=sheet).execute()
+
+        else:
+            raise TypeError("Sheet name variable must be of type str or list")
     
     #Main Functions
     def df_to_sheet(self, df, spreadsheet_name, sheet_name='Sheet1', return_response=False, by_id=False, **kwargs):
@@ -124,7 +140,7 @@ class SheetRelay:
         sheet_data = [df.columns.values.tolist()] + df.values.tolist()
         colstr = self._colnum_to_colstr(df.shape[1])
         sheet_request_body = {
-            'values': sheet_data
+            "values": sheet_data
         }
 
         if isinstance(sheet_name, str):
