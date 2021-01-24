@@ -37,7 +37,7 @@ class SheetRelay:
         else:
             key_file_path = input_key_file
 
-        if not os.path.isfile(input_key_file):
+        if not os.path.isfile(key_file_path):
             raise OSError(
                 "Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist,\n"
                 "or the key file path inputted does not exist"
