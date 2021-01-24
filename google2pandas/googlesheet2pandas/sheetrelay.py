@@ -13,8 +13,8 @@ class SheetRelay:
         sheet_scopes="https://www.googleapis.com/auth/spreadsheets.readonly",
         drive_scopes="https://www.googleapis.com/auth/drive.readonly",
     ):
-        self.sheet_scopes = sheet_scopes
         self.key_file = key_file
+        self.sheet_scopes = sheet_scopes
         self.drive_scopes = drive_scopes
 
     @ValidateSetterProperty
