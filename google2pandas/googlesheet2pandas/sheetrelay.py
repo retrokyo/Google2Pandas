@@ -148,8 +148,14 @@ class SheetRelay:
             self.clear_sheet(spreadsheet_id, by_id=True)
 
         try:
-            sheet_write_request = self._sheet_service.spreadsheets().values().update(spreadsheetId=spreadsheet_id,
-                                                                                    range='{0}!A1:{1}{2}'.format(sheet_name, colstr, df.shape[0]+1),valueInputOption=kwargs.get("value_input", "RAW"),body=sheet_request_body,)
+            sheet_write_request = self._sheet_service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,range='{0}!A1:{1}{2}'.format(sheet_name, colstr, df.shape[0]+1),
+                valueInputOption=kwargs.get("value_input", "RAW"),
+                includeValuesInResponse=kwargs.get("include_values_in_response", False),
+                responseValueRenderOption=kwargs.get("responseValueRenderOption", "FORMATTED_VALUE"),
+                responseDateTimeRenderOption=kwargs.get("response_date_time_render_option", "SERIAL_NUMBER")
+                body=sheet_request_body,
+            )
             
         except Exception as e:
             print(e)
