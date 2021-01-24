@@ -41,6 +41,7 @@ class SheetRelay:
         )
         self._file_list = self._get_file_list(page_size)
 
+    # Instace Variable Functions
     @ValidateSetterProperty
     def key_file(self, input_key_file):
         if input_key_file == None:
@@ -75,7 +76,7 @@ class SheetRelay:
                 .list(
                     pageSize=page_size,
                     q="mimeType='application/vnd.google-apps.spreadsheet'",
-                    pageToken=response['nextPageToken']
+                    pageToken=response["nextPageToken"],
                 )
                 .execute()
             )
@@ -83,3 +84,49 @@ class SheetRelay:
             file_list + response["files"]
 
         return file_list
+
+    # Helper Functions
+    def _colnum_to_colstr(self, colnum):
+        colstr = ""
+        while colnum > 0:
+            colnum, r = divmod(colnum - 1, 26)
+            colstr += chr(65 + r)
+
+        return colstr
+
+    def _colstr_to_colnum(self, colstr):
+        colnum = 0
+        for letter in colstr:
+            num = num * 26 + (ord(letter.upper()) - ord("A")) + 1
+
+        return colnum
+
+    def get_spreadsheet_id(self, spreadsheet_name):
+        try:
+            spreadsheet_id = next(
+                file["id"]
+                for file in self._file_list
+                if file["name"] == spreadsheet_name
+            )
+
+        except StopIteration:
+            raise Exception("Failed to find file {0} in drive".format(spreadsheet_name))
+
+        return spreadsheet_id
+    
+    #Main Functions
+    def df_to_sheet(self, df, spreadsheet_name, sheet_name='Sheet1', return_response=False, by_id=False, **kwargs):
+        if by_id:
+            spreadsheet_id = spreadsheet_name
+        else:
+            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name):
+        
+        sheet_data = [df.columns.values.tolist()] + df.values.tolist()
+        colstr = self._colnum_to_colstr(df.shape[1])
+        sheet_request_body = {
+            'values': sheet_data
+        }
+
+        if isinstance(sheet_name, str):
+            spreadsheet = self.sheet_service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
+            if sheet_name
