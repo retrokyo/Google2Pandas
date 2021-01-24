@@ -247,14 +247,14 @@ class SheetRelay:
             raise TypeError("start_row variable must be of type int")
 
         # End Cell
-        if not isinstance(end_row, (int, type(None))):
-            raise TypeError("end_row variable must be of type int")
-
         if isinstance(end_row, int):
             end_cell = end_col_str + str(end_row)
 
-        else:
+        elif isinstance(end_row, type(None)):
             end_cell = end_col_str
+
+        else:
+            raise TypeError("end_row variable must be of type int")
 
         # Number of Columns
         num_of_cols = (end_col_num - start_col_num) + 1
