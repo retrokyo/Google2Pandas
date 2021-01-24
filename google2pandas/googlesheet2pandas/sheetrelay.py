@@ -114,7 +114,7 @@ class SheetRelay:
 
         return spreadsheet_id
 
-    def clear_sheet(self, spreadsheet_name, sheet_name='Sheet1', by_id=False):
+    def clear_sheet(self, spreadsheet_name, sheet_name="Sheet1", by_id=False):
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
@@ -122,41 +122,68 @@ class SheetRelay:
 
         if isinstance(sheet_name, list):
             for sheet in sheet_name:
-                self._sheet_service.spreadsheets().values().batchClear(spreadsheetId=spreadsheet_id, ranges=sheet).execute()
+                self._sheet_service.spreadsheets().values().batchClear(
+                    spreadsheetId=spreadsheet_id, ranges=sheet
+                ).execute()
 
         elif isinstance(sheet_name, str):
-            self._sheet_service.spreadsheets().values().batchClear(spreadsheetId=spreadsheet_id, ranges=sheet).execute()
+            self._sheet_service.spreadsheets().values().batchClear(
+                spreadsheetId=spreadsheet_id, ranges=sheet
+            ).execute()
 
         else:
             raise TypeError("Sheet name variable must be of type str or list")
-    
-    #Main Functions
-    def df_to_sheet(self, df, spreadsheet_name, sheet_name='Sheet1', return_response=False, by_id=False, **kwargs):
+
+    # Main Functions
+    def df_to_sheet(
+        self,
+        df,
+        spreadsheet_name,
+        sheet_name="Sheet1",
+        return_response=False,
+        by_id=False,
+        **kwargs
+    ):
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
-            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name):
-        
+            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+
         sheet_data = [df.columns.values.tolist()] + df.values.tolist()
         colstr = self._colnum_to_colstr(df.shape[1])
-        sheet_request_body = {
-            "values": sheet_data
-        }
+        sheet_request_body = {"values": sheet_data}
 
-        spreadsheet = self.sheet_service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
-        if sheet_name in [sheet["properties"]["title"] for sheet in spreadsheet["sheets"]]:
+        spreadsheet = (
+            self.sheet_service.spreadsheets()
+            .get(spreadsheetId=spreadsheet_id)
+            .execute()
+        )
+        if sheet_name in [
+            sheet["properties"]["title"] for sheet in spreadsheet["sheets"]
+        ]:
             self.clear_sheet(spreadsheet_id, by_id=True)
 
         try:
-            sheet_write_request = self._sheet_service.spreadsheets().values().update(
-                spreadsheetId=spreadsheet_id,range='{0}!A1:{1}{2}'.format(sheet_name, colstr, df.shape[0]+1),
-                valueInputOption=kwargs.get("value_input", "RAW"),
-                includeValuesInResponse=kwargs.get("include_values_in_response", False),
-                responseValueRenderOption=kwargs.get("responseValueRenderOption", "FORMATTED_VALUE"),
-                responseDateTimeRenderOption=kwargs.get("response_date_time_render_option", "SERIAL_NUMBER")
-                body=sheet_request_body,
+            sheet_write_request = (
+                self._sheet_service.spreadsheets()
+                .values()
+                .update(
+                    spreadsheetId=spreadsheet_id,
+                    range="{0}!A1:{1}{2}".format(sheet_name, colstr, df.shape[0] + 1),
+                    valueInputOption=kwargs.get("value_input", "RAW"),
+                    includeValuesInResponse=kwargs.get(
+                        "include_values_in_response", False
+                    ),
+                    responseValueRenderOption=kwargs.get(
+                        "responseValueRenderOption", "FORMATTED_VALUE"
+                    ),
+                    responseDateTimeRenderOption=kwargs.get(
+                        "response_date_time_render_option", "SERIAL_NUMBER"
+                    ),
+                    body=sheet_request_body,
+                )
             )
-            
+
         except Exception as e:
             print(e)
 
