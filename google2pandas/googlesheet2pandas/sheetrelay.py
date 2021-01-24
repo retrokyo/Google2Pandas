@@ -3,7 +3,7 @@ from google.oauth2 import service_account
 
 import os
 
-from google2pandas.helpers import ValidateSetterProperty
+from google2pandas.helpers import ValidateSetterProperty, scope_validation
 
 
 class SheetRelay:
@@ -27,23 +27,7 @@ class SheetRelay:
             "https://www.googleapis.com/auth/spreadsheets.readonly",
         ]
 
-        if isinstance(new_scopes, list):
-            for scope in new_scopes:
-                if scope not in possible_sheet_scopes:
-                    raise ValueError(
-                        "A value within the sheet_scopes variable is not valid\n"
-                        "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
-                    )
-
-        elif isinstance(new_scopes, str):
-            if new_scopes not in possible_sheet_scopes:
-                raise ValueError(
-                    "The sheet_scopes variable is not valid\n"
-                    "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
-                )
-
-        else:
-            raise TypeError("The sheet_scopes variable should be of type list or str")
+        scope_validation(new_scopes, possible_sheet_scopes)
 
     @ValidateSetterProperty
     def key_file(self, input_key_file):
