@@ -27,7 +27,7 @@ class SheetRelay:
             "https://www.googleapis.com/auth/spreadsheets.readonly",
         ]
 
-        scope_validation(new_scopes, possible_sheet_scopes)
+        return scope_validation(new_scopes, possible_sheet_scopes)
 
     @ValidateSetterProperty
     def key_file(self, input_key_file):
@@ -42,3 +42,5 @@ class SheetRelay:
                 "Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist,\n"
                 "or the key file path inputted does not exist"
             )
+
+        return key_file_path

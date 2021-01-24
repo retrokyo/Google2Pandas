@@ -4,8 +4,8 @@ class ValidateSetterProperty:
         self.__doc__ = doc if doc is not None else func.__doc__
 
     def __set__(self, obj, value):
-        self.func(obj, value)
-        obj.__dict__[self.name] = value
+        validated_value = self.func(obj, value)
+        obj.__dict__[self.name] = validated_value
 
     def __set_name__(self, owner, name):
         self.name = name
@@ -28,4 +28,6 @@ def scope_validation(new_scopes, possbile_scopes):
             )
 
     else:
-        raise TypeError("The sheet_scopes variable should be of type list or str")
+        raise TypeError("The sheet_scopes variable should be of type list or str")\
+
+    return new_scopes
