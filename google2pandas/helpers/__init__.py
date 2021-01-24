@@ -17,14 +17,14 @@ def scope_validation(new_scopes, possbile_scopes):
             if scope not in new_scopes:
                 raise ValueError(
                     "A value within the sheet_scopes variable is not valid\n"
-                    "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
+                    "Check here for possible scope values https://developers.google.com/identity/protocols/oauth2/scopes"
                 )
 
     elif isinstance(new_scopes, str):
         if new_scopes not in possbile_scopes:
             raise ValueError(
                 "The sheet_scopes variable is not valid\n"
-                "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
+                "Check here for possible scope values https://developers.google.com/identity/protocols/oauth2/scopes"
             )
 
     else:
