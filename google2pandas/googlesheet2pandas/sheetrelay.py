@@ -203,7 +203,8 @@ class SheetRelay:
         blank_cells=False,
         first_row_header=True,
         major_dimensions="ROWS",
-        start_row=None,
+        start_row=1,
+        end_row=None,
         by_id=False,
         **kwargs,
     ):
@@ -212,6 +213,7 @@ class SheetRelay:
         else:
             spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
 
+        # Start Column Variables
         if isinstance(start_col, str):
             start_col_num = self._colstr_to_colnum(start_col)
             start_col_str = start_col
@@ -223,6 +225,7 @@ class SheetRelay:
         else:
             raise TypeError("start_col variable must be of type int or str")
 
+        # End Column Varibales
         if isinstance(end_col, str):
             end_col_num = self._colstr_to_colnum(end_col)
             end_col_str = end_col
@@ -234,12 +237,24 @@ class SheetRelay:
         else:
             raise TypeError("end_col variable must be of type int or str")
 
-        if isinstance(start_row, (str, int)):
-            start_cell = start_col + str(start_row)
+        # Start Cell
+        if isinstance(start_row, int):
+            start_cell = start_col_str + str(start_row)
 
         else:
-            raise TypeError("start_row variable must be of type int or str")
+            raise TypeError("start_row variable must be of type int")
 
+        # End Cell
+        if not isinstance(end_row, (int, type(None))):
+            raise TypeError("end_row variable must be of type int")
+
+        if isinstance(end_row, int):
+            end_cell = end_col_str + str(end_row)
+
+        else:
+            end_cell = end_col_str
+
+        # Number of Columns
         num_of_cols = (end_col_num - start_col_num) + 1
 
         sheet_write_request = (
@@ -250,7 +265,7 @@ class SheetRelay:
                 range="{0}!{1}:{2}".format(
                     sheet_name,
                     start_cell,
-                    end_col_str,
+                    end_cell,
                     majorDimensions=major_dimensions,
                 ),
                 valueRenderOption=kwargs.get("value_render_option", "FORMATTED_VALUE"),
