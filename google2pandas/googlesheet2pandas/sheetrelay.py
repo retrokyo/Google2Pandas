@@ -9,11 +9,12 @@ from google2pandas.helpers import ValidateSetterProperty
 class SheetRelay:
     def __init__(
         self,
-        sheet_scopes="https://www.googleapis.com/auth/spreadsheets.readonly",
         key_file=None,
+        sheet_scopes="https://www.googleapis.com/auth/spreadsheets.readonly",
         drive_scopes="https://www.googleapis.com/auth/drive.readonly",
     ):
         self.sheet_scopes = sheet_scopes
+        self.key_file = key_file
 
     @ValidateSetterProperty
     def sheet_scopes(self, new_scopes):
@@ -42,3 +43,14 @@ class SheetRelay:
 
         else:
             raise TypeError("The sheet_scopes variable should be of type list or str")
+
+    @ValidateSetterProperty
+    def key_file(self, input_key_file):
+        if input_key_file == None:
+            key_file_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
+        else:
+            key_file_path = input_key_file
+
+        if not os.path.isfile(input_key_file):
+            raise OSError('Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist, or the key file path inputted does not exist')
