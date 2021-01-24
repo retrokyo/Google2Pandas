@@ -1,5 +1,6 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+import pandas as pd
 
 import os
 
@@ -90,7 +91,7 @@ class SheetRelay:
         colstr = ""
         while colnum > 0:
             colnum, r = divmod(colnum - 1, 26)
-            colstr += chr(65 + r)
+            colstr = chr(65 + r) + colstr
 
         return colstr
 
@@ -163,34 +164,112 @@ class SheetRelay:
         ]:
             self.clear_sheet(spreadsheet_id, by_id=True)
 
-        try:
-            sheet_write_request = (
-                self._sheet_service.spreadsheets()
-                .values()
-                .update(
-                    spreadsheetId=spreadsheet_id,
-                    range="{0}!A1:{1}{2}".format(sheet_name, colstr, df.shape[0] + 1),
-                    valueInputOption=kwargs.get("value_input", "RAW"),
-                    includeValuesInResponse=kwargs.get(
-                        "include_values_in_response", False
-                    ),
-                    responseValueRenderOption=kwargs.get(
-                        "responseValueRenderOption", "FORMATTED_VALUE"
-                    ),
-                    responseDateTimeRenderOption=kwargs.get(
-                        "response_date_time_render_option", "SERIAL_NUMBER"
-                    ),
-                    body=sheet_request_body,
-                )
+        else:
+            raise Exception("sheet does not exist")
+
+        sheet_write_request = (
+            self._sheet_service.spreadsheets()
+            .values()
+            .update(
+                spreadsheetId=spreadsheet_id,
+                range="{0}!A1:{1}{2}".format(sheet_name, colstr, df.shape[0] + 1),
+                valueInputOption=kwargs.get("value_input", "RAW"),
+                includeValuesInResponse=kwargs.get("include_values_in_response", False),
+                responseValueRenderOption=kwargs.get(
+                    "responseValueRenderOption", "FORMATTED_VALUE"
+                ),
+                responseDateTimeRenderOption=kwargs.get(
+                    "response_date_time_render_option", "SERIAL_NUMBER"
+                ),
+                body=sheet_request_body,
             )
+        )
+
+        try:
+            response = sheet_write_request.execute()
 
         except Exception as e:
             print(e)
 
-        else:
-            raise Exception("sheet does not exist")
-
-        response = sheet_write_request.execute()
-
         if return_response:
             return response
+
+    def sheet_to_df(
+        self,
+        spreadsheet_name,
+        start_col,
+        end_col,
+        sheet_name="Sheet1",
+        blank_cells=False,
+        first_row_header=True,
+        major_dimensions="ROWS",
+        start_row=None,
+        by_id=False,
+    ):
+        if by_id:
+            spreadsheet_id = spreadsheet_name
+        else:
+            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+
+        if isinstance(start_col, str):
+            start_col_num = self._colstr_to_colnum(start_col)
+            start_col_str = start_col
+
+        elif isinstance(start_col, int):
+            start_col_num = start_col
+            start_col_str = self._colnum_to_colstr(start_col)
+
+        else:
+            raise TypeError("start_col variable must be of type int or str")
+
+        if isinstance(end_col, str):
+            end_col_num = self._colstr_to_colnum(end_col)
+            end_col_str = end_col
+
+        elif isinstance(end_col, int):
+            end_col_num = end_col
+            end_col_str = self._colnum_to_colstr(end_col)
+
+        else:
+            raise TypeError("end_col variable must be of type int or str")
+
+        if isinstance(start_row, (str, int)):
+            start_cell = start_col + str(start_row)
+
+        else:
+            raise TypeError("start_row variable must be of type int or str")
+
+        num_of_cols = (end_col_num - start_col_num) + 1
+
+        sheet_write_request = (
+            self._sheet_service.spreadsheets()
+            .values()
+            .get(
+                spreadsheetId=spreadsheet_id,
+                range="{0}!{1}:{2}".format(
+                    sheet_name,
+                    start_cell,
+                    end_col_str,
+                    majorDimensions=major_dimensions,
+                ),
+            )
+        )
+
+        try:
+            response = sheet_write_request.execute()
+
+        except Exception as e:
+            print(e)
+
+        if not blank_cells:
+            if first_row_header:
+                df_data = response["values"][1:]
+                df_col = response["values"][0]
+
+            else:
+                df_data = response["values"]
+                df_col = [self._colnum_to_colstr(i) for i in range(num_of_cols)]
+
+        df = pd.DataFrame(data=df_data, columns=df_col)
+
+        return df
