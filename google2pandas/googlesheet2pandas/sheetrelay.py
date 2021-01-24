@@ -15,10 +15,10 @@ class SheetRelay:
 
     @property
     def sheet_scopes(self):
-        return self.scopes
+        return self.sheet_scopes
 
     @sheet_scopes.setter
-    def scopes(self, new_scopes):
+    def sheet_scopes(self, new_scopes):
         possible_sheet_scopes = [
             "https://www.googleapis.com/auth/drive",
             "https://www.googleapis.com/auth/drive.file",
@@ -31,12 +31,18 @@ class SheetRelay:
             for scope in new_scopes:
                 if scope not in possible_sheet_scopes:
                     raise ValueError(
-                        "A value within the sheet_scopes variable is not valid\nCheck here for possible scopes values https://developers.google.com/sheets/api/guides/authorizing"
+                        "A value within the sheet_scopes variable is not valid\n"
+                        "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
                     )
 
-        if new_scopes not in possible_sheet_scopes:
-            raise ValueError(
-                "The sheet_scopes variables is not valid\nCheck here for possible scopes values https://developers.google.com/sheets/api/guides/authorizing"
-            )
+        elif isinstance(new_scopes, str):
+            if new_scopes not in possible_sheet_scopes:
+                raise ValueError(
+                    "The sheet_scopes variable is not valid\n"
+                    "Check here for possible scope values https://developers.google.com/sheets/api/guides/authorizing"
+                )
 
-        self.scopes = new_scopes
+        else:
+            raise TypeError('The sheet_scopes variable should be of type list or str')
+
+        self.sheet_scopes = new_scopes
