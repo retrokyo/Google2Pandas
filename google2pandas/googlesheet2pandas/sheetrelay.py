@@ -104,7 +104,7 @@ class SheetRelay:
 
         return colnum
 
-    def get_spreadsheet_id(self, spreadsheet_name):
+    def _get_spreadsheet_id(self, spreadsheet_name):
         try:
             spreadsheet_id = next(
                 file["id"]
@@ -117,11 +117,11 @@ class SheetRelay:
 
         return spreadsheet_id
 
-    def clear_sheet(self, spreadsheet_name, sheet_name="Sheet1", by_id=False):
+    def _clear_sheet(self, spreadsheet_name, sheet_name="Sheet1", by_id=False):
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
-            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+            spreadsheet_id = self._get_spreadsheet_id(spreadsheet_name)
 
         if isinstance(sheet_name, list):
             for sheet in sheet_name:
@@ -150,7 +150,7 @@ class SheetRelay:
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
-            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+            spreadsheet_id = self._get_spreadsheet_id(spreadsheet_name)
 
         sheet_data = [df.columns.values.tolist()] + df.values.tolist()
         colstr = self._colnum_to_colstr(df.shape[1])
@@ -164,7 +164,7 @@ class SheetRelay:
         if sheet_name in [
             sheet["properties"]["title"] for sheet in spreadsheet["sheets"]
         ]:
-            self.clear_sheet(spreadsheet_id, by_id=True)
+            self._clear_sheet(spreadsheet_id, by_id=True)
 
         else:
             raise Exception("sheet does not exist")
@@ -213,7 +213,7 @@ class SheetRelay:
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
-            spreadsheet_id = self.get_spreadsheet_id(spreadsheet_name)
+            spreadsheet_id = self._get_spreadsheet_id(spreadsheet_name)
 
         # Start Column Variables
         if isinstance(start_col, str):
