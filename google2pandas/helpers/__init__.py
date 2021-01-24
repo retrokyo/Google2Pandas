@@ -9,24 +9,3 @@ class ValidateSetterProperty:
 
     def __set_name__(self, owner, name):
         self.name = name
-
-
-def scope_validation(new_scopes, possbile_scopes):
-    if isinstance(new_scopes, list):
-        for scope in new_scopes:
-            if scope not in new_scopes:
-                raise ValueError(
-                    "A value within the sheet_scopes variable is not valid\n"
-                    "Check here for possible scope values https://developers.google.com/identity/protocols/oauth2/scopes"
-                )
-
-    elif isinstance(new_scopes, str):
-        if new_scopes not in possbile_scopes:
-            raise ValueError(
-                "The sheet_scopes variable is not valid\n"
-                "Check here for possible scope values https://developers.google.com/identity/protocols/oauth2/scopes"
-            )
-
-    else:
-        raise TypeError("The sheet_scopes variable should be of type list or str")
-    return new_scopes
