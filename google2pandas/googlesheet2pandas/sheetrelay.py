@@ -3,6 +3,8 @@ from google.oauth2 import service_account
 
 import os
 
+from google2pandas.helpers import ValidateSetterProperty
+
 
 class SheetRelay:
     def __init__(
@@ -13,11 +15,7 @@ class SheetRelay:
     ):
         self.sheet_scopes = sheet_scopes
 
-    @property
-    def sheet_scopes(self):
-        return self.sheet_scopes
-
-    @sheet_scopes.setter
+    @ValidateSetterProperty
     def sheet_scopes(self, new_scopes):
         possible_sheet_scopes = [
             "https://www.googleapis.com/auth/drive",
@@ -43,6 +41,4 @@ class SheetRelay:
                 )
 
         else:
-            raise TypeError('The sheet_scopes variable should be of type list or str')
-
-        self.sheet_scopes = new_scopes
+            raise TypeError("The sheet_scopes variable should be of type list or str")
