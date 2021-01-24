@@ -16,10 +16,19 @@ class SheetRelay:
         key_file=None,
     ):
         self.key_file = key_file
-        self._sheet_credentials = service_account.Credentials.from_service_account_file(self.key_file).with_scopes(sheet_scopes)
-        self._drive_credentials = service_account.Credentials.from_service_account_file(self.key_file).with_scopes(drive_scopes)
-        self._sheet_service = build('sheets', 'v4', self._sheet_credentials)
-        self._drive_service = build('drive', 'v3', self._drive_credentials)
+        self._sheet_credentials = service_account.Credentials.from_service_account_file(
+            self.key_file
+        ).with_scopes(sheet_scopes)
+        self._drive_credentials = service_account.Credentials.from_service_account_file(
+            self.key_file
+        ).with_scopes(drive_scopes)
+        self._sheet_service = build("sheets", "v4", self._sheet_credentials)
+        self._drive_service = build("drive", "v3", self._drive_credentials)
+        self._file_list = (
+            self.drive_service.files()
+            .list(pageSize=1000, q="mimeType='application/vnd.google-apps.spreadsheet'")
+            .execute()
+        )
 
     @ValidateSetterProperty
     def key_file(self, input_key_file):
