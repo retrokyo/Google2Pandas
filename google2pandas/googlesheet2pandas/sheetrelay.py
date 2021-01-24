@@ -143,7 +143,7 @@ class SheetRelay:
         sheet_name="Sheet1",
         return_response=False,
         by_id=False,
-        **kwargs
+        **kwargs,
     ):
         if by_id:
             spreadsheet_id = spreadsheet_name
@@ -205,6 +205,7 @@ class SheetRelay:
         major_dimensions="ROWS",
         start_row=None,
         by_id=False,
+        **kwargs,
     ):
         if by_id:
             spreadsheet_id = spreadsheet_name
@@ -251,6 +252,10 @@ class SheetRelay:
                     start_cell,
                     end_col_str,
                     majorDimensions=major_dimensions,
+                ),
+                valueRenderOption=kwargs.get("value_render_option", "FORMATTED_VALUE"),
+                dateTimeRenderOption=kwargs.get(
+                    "datetime_render_option", "SERIAL_NUMBER"
                 ),
             )
         )
