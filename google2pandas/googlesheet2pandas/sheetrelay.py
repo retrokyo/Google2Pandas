@@ -15,6 +15,7 @@ class SheetRelay:
     ):
         self.sheet_scopes = sheet_scopes
         self.key_file = key_file
+        self.drive_scopes = drive_scopes
 
     @ValidateSetterProperty
     def sheet_scopes(self, new_scopes):
@@ -47,10 +48,13 @@ class SheetRelay:
     @ValidateSetterProperty
     def key_file(self, input_key_file):
         if input_key_file == None:
-            key_file_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+            key_file_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
         else:
             key_file_path = input_key_file
 
         if not os.path.isfile(input_key_file):
-            raise OSError('Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist, or the key file path inputted does not exist')
+            raise OSError(
+                "Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist,\n"
+                "or the key file path inputted does not exist"
+            )
