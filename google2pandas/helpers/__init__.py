@@ -28,6 +28,5 @@ def scope_validation(new_scopes, possbile_scopes):
             )
 
     else:
-        raise TypeError("The sheet_scopes variable should be of type list or str")\
-
+        raise TypeError("The sheet_scopes variable should be of type list or str")
     return new_scopes
