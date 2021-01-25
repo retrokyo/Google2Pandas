@@ -57,18 +57,18 @@ class SheetRelay:
     @ValidateSetterProperty
     def key_file(self, input_key_file: Optional[PathLike]) -> PathLike:
         if input_key_file == None:
-            key_file_path: Optional[PathLike] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") #type: ignore[assignment]
+            key_file_path: Optional[PathLike] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")  # type: ignore[assignment]
 
         else:
             key_file_path = input_key_file
 
-        if not os.path.isfile(key_file_path): #type: ignore[arg-type]
+        if not os.path.isfile(key_file_path):  # type: ignore[arg-type]
             raise OSError(
                 "Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist,\n"
                 "or the key file path inputted does not exist"
             )
 
-        return key_file_path #type: ignore[return-value]
+        return key_file_path  # type: ignore[return-value]
 
     def _get_file_list(self, page_size: int) -> list[dict]:
         response = (
@@ -152,7 +152,7 @@ class SheetRelay:
             raise TypeError("Sheet name variable must be of type str or list")
 
     # Main Functions
-    def df_to_sheet( #type: ignore[return]
+    def df_to_sheet(  # type: ignore[return]
         self,
         df: pd.DataFrame,
         spreadsheet_name: str,
