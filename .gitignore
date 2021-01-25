@@ -133,3 +133,6 @@ dmypy.json
 
 #Jupyter Testing
 jupyter_testing/
+
+#Conda env list
+Google2Pandas.yml
