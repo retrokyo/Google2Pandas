@@ -53,7 +53,7 @@ class SheetRelay:
         )
         self._file_list = self._get_file_list(page_size)
 
-    # Instace Variable Functions
+    # Instance Variable Functions
     @ValidateSetterProperty
     def key_file(self, input_key_file: PathLike) -> PathLike:
         if input_key_file == None:
