@@ -271,7 +271,7 @@ class SheetRelay:
             raise TypeError("end_row variable must be of type int")
 
         # Number of Columns
-        num_of_cols = (end_col_num - start_col_num) + 1
+        num_of_cols: int = (end_col_num - start_col_num) + 1
 
         sheet_write_request = (
             self._sheet_service.spreadsheets()
