@@ -1,4 +1,4 @@
-from googlesheet2pandas.sheetrelay import SheetRelay
+from google2pandas import SheetRelay
 
 import pytest
 
