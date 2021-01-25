@@ -21,7 +21,7 @@ def exec_in_env():
     env_path = join(base_path, ".tox", "bootstrap")
 
     if sys.platform == "win32":
-        bin_path = join(env_path, "scripts")
+        bin_path = join(env_path, "Scripts")
     else:
         bin_path = join(env_path, "bin")
 
@@ -39,8 +39,8 @@ def exec_in_env():
             except subprocess.CalledProcessError:
                 check_call(["virtualenv", env_path])
 
-        print("Installing `jnja2` into bootstrap enviroment...")
-        check_Call([join(bin_path, "pip"), "install", "jinja2", "tox", "matrix"])
+        print("Installing `jinja2` into bootstrap enviroment...")
+        check_call([join(bin_path, "pip"), "install", "jinja2", "tox", "matrix"])
 
     python_executable = join(bin_path, "python")
 
@@ -49,7 +49,7 @@ def exec_in_env():
 
     print("Re-executing with: {0}".format(python_executable))
     print("+ exec", python_executable, __file__, "--no-env")
-    os.execv(python_executable, [python_executable, __file__, "no-env"])
+    os.execv(python_executable, [python_executable, __file__, "--no-env"])
 
 
 def main():
