@@ -55,20 +55,20 @@ class SheetRelay:
 
     # Instance Variable Functions
     @ValidateSetterProperty
-    def key_file(self, input_key_file: PathLike) -> PathLike:
+    def key_file(self, input_key_file: Optional[PathLike]) -> PathLike:
         if input_key_file == None:
-            key_file_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+            key_file_path: Optional[PathLike] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") #type: ignore[assignment]
 
         else:
             key_file_path = input_key_file
 
-        if not os.path.isfile(key_file_path):
+        if not os.path.isfile(key_file_path): #type: ignore[arg-type]
             raise OSError(
                 "Either the enviroment variable GOOGLE_APPLICATION_CRDENTIALS is incorrect or does not exist,\n"
                 "or the key file path inputted does not exist"
             )
 
-        return key_file_path
+        return key_file_path #type: ignore[return-value]
 
     def _get_file_list(self, page_size: int) -> list[dict]:
         response = (
@@ -99,7 +99,7 @@ class SheetRelay:
 
     # Helper Functions
     def _colnum_to_colstr(self, colnum: int) -> str:
-        colstr = ""
+        colstr: str = ""
         while colnum > 0:
             colnum, r = divmod(colnum - 1, 26)
             colstr = chr(65 + r) + colstr
@@ -107,9 +107,9 @@ class SheetRelay:
         return colstr
 
     def _colstr_to_colnum(self, colstr: str) -> int:
-        colnum = 0
+        colnum: int = 0
         for letter in colstr:
-            num = num * 26 + (ord(letter.upper()) - ord("A")) + 1
+            colnum = colnum * 26 + (ord(letter.upper()) - ord("A")) + 1
 
         return colnum
 
@@ -152,7 +152,7 @@ class SheetRelay:
             raise TypeError("Sheet name variable must be of type str or list")
 
     # Main Functions
-    def df_to_sheet(
+    def df_to_sheet( #type: ignore[return]
         self,
         df: pd.DataFrame,
         spreadsheet_name: str,
@@ -171,7 +171,7 @@ class SheetRelay:
         sheet_request_body = {"values": sheet_data}
 
         spreadsheet = (
-            self.sheet_service.spreadsheets()
+            self._sheet_service.spreadsheets()
             .get(spreadsheetId=spreadsheet_id)
             .execute()
         )
@@ -202,7 +202,7 @@ class SheetRelay:
         )
 
         try:
-            response = sheet_write_request.execute()
+            response: dict = sheet_write_request.execute()
 
         except Exception as e:
             print(e)
@@ -215,7 +215,7 @@ class SheetRelay:
         spreadsheet_name: str,
         start_col: ColumnId,
         end_col: ColumnId,
-        sheet_name: StringOrList = "Sheet1",
+        sheet_name: str = "Sheet1",
         blank_cells: bool = False,
         first_row_header: bool = True,
         major_dimensions: str = "ROWS",
@@ -231,8 +231,8 @@ class SheetRelay:
 
         # Start Column Variables
         if isinstance(start_col, str):
-            start_col_num = self._colstr_to_colnum(start_col)
-            start_col_str = start_col
+            start_col_num: int = self._colstr_to_colnum(start_col)
+            start_col_str: str = start_col
 
         elif isinstance(start_col, int):
             start_col_num = start_col
@@ -243,8 +243,8 @@ class SheetRelay:
 
         # End Column Varibales
         if isinstance(end_col, str):
-            end_col_num = self._colstr_to_colnum(end_col)
-            end_col_str = end_col
+            end_col_num: int = self._colstr_to_colnum(end_col)
+            end_col_str: str = end_col
 
         elif isinstance(end_col, int):
             end_col_num = end_col
@@ -255,14 +255,14 @@ class SheetRelay:
 
         # Start Cell
         if isinstance(start_row, int):
-            start_cell = start_col_str + str(start_row)
+            start_cell: str = start_col_str + str(start_row)
 
         else:
             raise TypeError("start_row variable must be of type int")
 
         # End Cell
         if isinstance(end_row, int):
-            end_cell = end_col_str + str(end_row)
+            end_cell: str = end_col_str + str(end_row)
 
         elif isinstance(end_row, type(None)):
             end_cell = end_col_str
@@ -282,8 +282,8 @@ class SheetRelay:
                     sheet_name,
                     start_cell,
                     end_cell,
-                    majorDimensions=major_dimensions,
                 ),
+                majorDimensions=major_dimensions,
                 valueRenderOption=kwargs.get("value_render_option", "FORMATTED_VALUE"),
                 dateTimeRenderOption=kwargs.get(
                     "datetime_render_option", "SERIAL_NUMBER"

@@ -5,5 +5,5 @@ import os
 PathLike = TypeVar("PathLike", str, bytes, os.PathLike)
 
 #Multitype arguments
-StringOrList = TypeVar("StringOrList", str, list)
-ColumnId = TypeVar("ColumnId", str, int)
+StringOrList = Union[str, list[str]]
+ColumnId = Union[str, int]
