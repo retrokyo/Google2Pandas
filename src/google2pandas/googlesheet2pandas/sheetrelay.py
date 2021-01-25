@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 import pandas as pd
 
 import os
-from typing import Union, Optional, Any, ClassVar
+from typing import Optional, Any, ClassVar
 
 from google2pandas.helpers import ValidateSetterProperty, scope_validation
 from google2pandas._typing import PathLike, StringOrList, ColumnId
