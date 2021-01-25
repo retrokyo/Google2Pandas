@@ -7,8 +7,8 @@ import pandas as pd
 import os
 from typing import Optional, Any, ClassVar
 
-from .google2pandas.helpers import ValidateSetterProperty
-from .google2pandas._typing import PathLike, StringOrList, ColumnId
+from google2pandas.helpers import ValidateSetterProperty
+from google2pandas._typing import PathLike, StringOrList, ColumnId
 
 
 class SheetRelay:
