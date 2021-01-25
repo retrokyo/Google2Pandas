@@ -1,20 +1,29 @@
-#TO DO DOCUMENTATION
+# TO DO DOCUMENTATION
 
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import pandas as pd
 
 import os
+from typing import Union, Optional, Any, ClassVar
 
 from google2pandas.helpers import ValidateSetterProperty, scope_validation
+from google2pandas._typing import PathLike, StringOrList, ColumnId
 
 
 class SheetRelay:
 
-    sheet_scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-    drive_scopes = ["https://www.googleapis.com/auth/drive.readonly"]
+    sheet_scopes: ClassVar[list[str]] = ["https://www.googleapis.com/auth/spreadsheets"]
+    drive_scopes: ClassVar[list[str]] = [
+        "https://www.googleapis.com/auth/drive.readonly"
+    ]
 
-    def __init__(self, key_file=None, page_size=100, **kwargs):
+    def __init__(
+        self,
+        key_file: Optional[PathLike] = None,
+        page_size: int = 100,
+        **kwargs: Any,
+    ) -> None:
         self.key_file = key_file
         self._sheet_credentials = service_account.Credentials.from_service_account_file(
             self.key_file
@@ -46,7 +55,7 @@ class SheetRelay:
 
     # Instace Variable Functions
     @ValidateSetterProperty
-    def key_file(self, input_key_file):
+    def key_file(self, input_key_file: PathLike) -> PathLike:
         if input_key_file == None:
             key_file_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
@@ -61,7 +70,7 @@ class SheetRelay:
 
         return key_file_path
 
-    def _get_file_list(self, page_size):
+    def _get_file_list(self, page_size: int) -> list[dict]:
         response = (
             self._drive_service.files()
             .list(
@@ -89,7 +98,7 @@ class SheetRelay:
         return file_list
 
     # Helper Functions
-    def _colnum_to_colstr(self, colnum):
+    def _colnum_to_colstr(self, colnum: int) -> str:
         colstr = ""
         while colnum > 0:
             colnum, r = divmod(colnum - 1, 26)
@@ -97,14 +106,14 @@ class SheetRelay:
 
         return colstr
 
-    def _colstr_to_colnum(self, colstr):
+    def _colstr_to_colnum(self, colstr: str) -> int:
         colnum = 0
         for letter in colstr:
             num = num * 26 + (ord(letter.upper()) - ord("A")) + 1
 
         return colnum
 
-    def _get_spreadsheet_id(self, spreadsheet_name):
+    def _get_spreadsheet_id(self, spreadsheet_name: str) -> str:
         try:
             spreadsheet_id = next(
                 file["id"]
@@ -117,7 +126,12 @@ class SheetRelay:
 
         return spreadsheet_id
 
-    def _clear_sheet(self, spreadsheet_name, sheet_name="Sheet1", by_id=False):
+    def _clear_sheet(
+        self,
+        spreadsheet_name: str,
+        sheet_name: StringOrList = "Sheet1",
+        by_id: bool = False,
+    ):
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
@@ -140,13 +154,13 @@ class SheetRelay:
     # Main Functions
     def df_to_sheet(
         self,
-        df,
-        spreadsheet_name,
-        sheet_name="Sheet1",
-        return_response=False,
-        by_id=False,
-        **kwargs,
-    ):
+        df: pd.DataFrame,
+        spreadsheet_name: str,
+        sheet_name: StringOrList = "Sheet1",
+        return_response: bool = False,
+        by_id: bool = False,
+        **kwargs: Any,
+    ) -> Optional[dict]:
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
@@ -198,18 +212,18 @@ class SheetRelay:
 
     def sheet_to_df(
         self,
-        spreadsheet_name,
-        start_col,
-        end_col,
-        sheet_name="Sheet1",
-        blank_cells=False,
-        first_row_header=True,
-        major_dimensions="ROWS",
-        start_row=1,
-        end_row=None,
-        by_id=False,
-        **kwargs,
-    ):
+        spreadsheet_name: str,
+        start_col: ColumnId,
+        end_col: ColumnId,
+        sheet_name: StringOrList = "Sheet1",
+        blank_cells: bool = False,
+        first_row_header: bool = True,
+        major_dimensions: str = "ROWS",
+        start_row: int = 1,
+        end_row: Optional[int] = None,
+        by_id: bool = False,
+        **kwargs: Any,
+    ) -> pd.DataFrame:
         if by_id:
             spreadsheet_id = spreadsheet_name
         else:
