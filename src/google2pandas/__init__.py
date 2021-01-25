@@ -1,1 +1,1 @@
-from googlesheet2pandas.sheetrelay import SheetRelay
+from google2pandas.googlesheet2pandas.sheetrelay import SheetRelay
